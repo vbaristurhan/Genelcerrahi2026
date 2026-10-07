@@ -1,3 +1,4 @@
+import {buildDomainReport} from './domain-scoring.mjs';
 export const AREAS = Object.freeze({assessment:'İlk değerlendirme ve tanısal yaklaşım',investigation:'Tetkik seçimi ve yorumlama',treatment:'Tedavi ve zamanlama',followup:'İzlem ve güvenli sonlandırma'});
 export function validateRubric(rubric) {
  if(!rubric?.version || !Array.isArray(rubric.cases) || !rubric.cases.length) throw Error('Puanlama haritası tamamlanmamış');
@@ -7,6 +8,7 @@ export function validateRubric(rubric) {
 }
 export function buildReport(session,rubric){
  validateRubric(rubric);
+ if(rubric.scoringMode==='domain-mean-v1')return buildDomainReport(session,rubric,AREAS);
  if(!session.finished_at && !session.finishedAt) throw Error('Sonuç yalnız sınav tamamlandıktan sonra açılır');
  const cases=rubric.cases.map(c=>{
   const rows=(session.log||[]).filter(r=>r.caseId===c.id);const earned=new Map();
